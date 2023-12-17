@@ -1,4 +1,4 @@
-# Like a Pro
+# Like a Pro recordings
 
 Bancolombia reactive programming course - **Task #1**
 
