@@ -1,6 +1,6 @@
 package co.com.likeapro.likeaprorecordings.services;
 
-import co.com.likeapro.likeaprorecordings.models.Statistics;
+import co.com.likeapro.likeaprorecordings.models.*;
 import co.com.likeapro.likeaprorecordings.repositories.StatisticsRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -13,10 +13,13 @@ import reactor.core.publisher.Mono;
 
 @Service
 @AllArgsConstructor
-public class StatisticsService {
+public class StatisticsService implements MvpInterface, BestEventInterface {
 
     private final Logger logger = LoggerFactory.getLogger(StatisticsService.class);
     private final StatisticsRepository statisticsRepository;
+    private final CustomerService customerService;
+    private final RecordingService recordingService;
+    private final EventService eventService;
 
     public Mono<Statistics> saveStatistics(Statistics statistics) {
         return statisticsRepository.save(statistics)
@@ -65,6 +68,45 @@ public class StatisticsService {
                 .flatMap(statisticsRepository::delete)
                 .onErrorResume(throwable -> {
                     logger.error("Error deleting the statistics with ID: .{}", id, throwable);
+                    return Mono.empty();
+                });
+    }
+
+    @Override
+    public Mono<Customer> getMvp() {
+        return this.getStatisticsWithMvp()
+                .flatMap(statistics -> customerService.findCustomerById(statistics.getData()))
+                .onErrorResume(throwable -> {
+                    logger.error("Error finding the most highlights customer.", throwable);
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<Statistics> getStatisticsWithMvp() {
+        return this.statisticsRepository.findMvp()
+                .onErrorResume(throwable -> {
+                    logger.error("Error finding the most highlights customer.", throwable);
+                    return Mono.empty();
+                });
+    }
+
+    @Override
+    public Mono<Event> getBestEvent() {
+        return this.getStatisticsWithBestEvent()
+                .flatMap(statistics -> {
+                    Mono<Recording> recording = recordingService.findRecordingById(statistics.getRecording());
+                    return recording.flatMap(recordingMap -> eventService.findEventById(recordingMap.getEvent()));
+                })
+                .onErrorResume(throwable -> {
+                    logger.error("Error finding the best event.", throwable);
+                    return Mono.empty();
+                });
+    }
+
+    private Mono<Statistics> getStatisticsWithBestEvent() {
+        return this.statisticsRepository.findBestEvent()
+                .onErrorResume(throwable -> {
+                    logger.error("Error finding the best event.", throwable);
                     return Mono.empty();
                 });
     }

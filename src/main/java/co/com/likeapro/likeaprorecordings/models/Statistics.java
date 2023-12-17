@@ -16,8 +16,8 @@ public class Statistics {
     @Id
     private Long id;
     private Timestamp timestamp;
-    private String recording;
-    private String data;
+    private Long recording;
+    private Long data;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

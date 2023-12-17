@@ -42,14 +42,9 @@ Bancolombia reactive programming course - **Task #1**
   * **id**: Double
   * **timestamp**: Timestamp
   * **recording**: Recording
-  * **data**: String
+  * **data**: Customer
   * **created_at**: Timestamp
   * **updated_at**: Timestamp
-
-## Relationship diagram
-
----
-
 
 ## Endpoints
 
@@ -82,6 +77,5 @@ Bancolombia reactive programming course - **Task #1**
   * `GET /actuator/health`
 * ### Current MVP (Most Valuable Player)
   * Player (or players) with the most highlights in all the events: `GET /statistics/mvp`
-* ### Current MVT (Most Valuable Team)
-  * Team (or teams) with the most highlights in all the events: `GET /statistics/mvt`
-* 
+* ### Current most highlights event
+  * Event with the most highlights: `GET /statistics/best-event`

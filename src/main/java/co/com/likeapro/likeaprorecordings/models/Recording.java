@@ -16,7 +16,7 @@ public class Recording {
     @Id
     private Long id;
     private String name;
-    private String event;
+    private Long event;
     private Time duration;
     private Boolean status;
     private LocalDateTime createdAt;

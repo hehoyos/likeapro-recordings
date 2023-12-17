@@ -1,5 +1,7 @@
 package co.com.likeapro.likeaprorecordings.controllers;
 
+import co.com.likeapro.likeaprorecordings.models.Customer;
+import co.com.likeapro.likeaprorecordings.models.Event;
 import co.com.likeapro.likeaprorecordings.models.Statistics;
 import co.com.likeapro.likeaprorecordings.services.StatisticsService;
 import lombok.AllArgsConstructor;
@@ -44,5 +46,15 @@ public class StatisticsController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteStatistics(@PathVariable Long id) {
         return statisticsService.deleteStatistics(id);
+    }
+
+    @GetMapping("/mvp")
+    public Mono<Customer> getMvp() {
+        return statisticsService.getMvp();
+    }
+
+    @GetMapping("/best-event")
+    public Mono<Event> getBestEvent() {
+        return statisticsService.getBestEvent();
     }
 }
