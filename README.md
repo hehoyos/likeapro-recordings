@@ -55,24 +55,28 @@ Bancolombia reactive programming course - **Task #1**
   * Read All: `GET /customer`
   * Update: `PUT /customer/{id}`
   * Delete: `DELETE /customer/{id}`
+  * Get customer from Kafka topic: `GET /customer/kafka/{topic}/{partition}/{offset}`
 * ### Event
   * Create: `POST /event`
   * Read: `GET /event/{id}`
   * Read All: `GET /event`
   * Update: `PUT /event/{id}`
   * Delete: `DELETE /event/{id}`
+  * Get event from Kafka topic: `GET /event/kafka/{topic}/{partition}/{offset}`
 * ### Recording
   * Create: `POST /recording`
   * Read: `GET /recording/{id}`
   * Read All: `GET /recording`
   * Update: `PUT /recording/{id}`
   * Delete: `DELETE /recording/{id}`
+  * Get recording from Kafka topic: `GET /recording/kafka/{topic}/{partition}/{offset}`
 * ### Statistics
   * Create: `POST /statistics`
   * Read: `GET /statistics/{id}`
   * Read All: `GET /statistics`
   * Update: `PUT /statistics/{id}`
   * Delete: `DELETE /statistics/{id}`
+  * Get statistics from Kafka topic: `GET /statistics/kafka/{topic}/{partition}/{offset}`
 * ### Actuator health check
   * `GET /actuator/health`
 * ### Current MVP (Most Valuable Player)

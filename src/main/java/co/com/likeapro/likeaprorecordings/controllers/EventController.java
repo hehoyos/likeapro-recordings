@@ -2,6 +2,7 @@ package co.com.likeapro.likeaprorecordings.controllers;
 
 import co.com.likeapro.likeaprorecordings.models.Event;
 import co.com.likeapro.likeaprorecordings.services.EventService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,5 +45,11 @@ public class EventController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteEvent(@PathVariable Long id) {
         return eventService.deleteEvent(id);
+    }
+
+    @GetMapping("/kafka/{topic}/{partition}/{offset}")
+    public Mono<Event> getEventFromKafkaTopic(@PathVariable String topic, @PathVariable Integer partition,
+                                                    @PathVariable Integer offset) throws JsonProcessingException {
+        return eventService.getEventFromKafka(topic, partition, offset);
     }
 }

@@ -1,15 +1,22 @@
 package co.com.likeapro.likeaprorecordings.services;
 
+import co.com.likeapro.likeaprorecordings.config.KafkaConfig;
 import co.com.likeapro.likeaprorecordings.models.Recording;
 import co.com.likeapro.likeaprorecordings.repositories.RecordingRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -17,6 +24,7 @@ public class RecordingService {
 
     private final Logger logger = LoggerFactory.getLogger(RecordingService.class);
     private final RecordingRepository recordingRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public Mono<Recording> saveRecording(Recording recording) {
         return recordingRepository.save(recording)
@@ -68,5 +76,18 @@ public class RecordingService {
                     logger.error("Error deleting the recording with ID: .{}", id, throwable);
                     return Mono.empty();
                 });
+    }
+
+    public Mono<Recording> getRecordingFromKafka(String topic, Integer partition, Integer offset)
+            throws JsonProcessingException {
+
+        ConsumerRecord<String, String> receivedRecording;
+        KafkaConfig kafkaConfig = new KafkaConfig();
+        kafkaTemplate.setConsumerFactory(kafkaConfig.consumerFactory());
+        receivedRecording = kafkaTemplate.receive(topic, partition, offset);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Recording recording = objectMapper.readValue(Objects.requireNonNull(receivedRecording).value(),
+                Recording.class);
+        return this.saveRecording(recording);
     }
 }

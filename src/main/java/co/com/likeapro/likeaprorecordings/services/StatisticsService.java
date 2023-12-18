@@ -1,15 +1,27 @@
 package co.com.likeapro.likeaprorecordings.services;
 
-import co.com.likeapro.likeaprorecordings.models.*;
+import co.com.likeapro.likeaprorecordings.config.KafkaConfig;
+import co.com.likeapro.likeaprorecordings.models.BestEventInterface;
+import co.com.likeapro.likeaprorecordings.models.Customer;
+import co.com.likeapro.likeaprorecordings.models.Event;
+import co.com.likeapro.likeaprorecordings.models.MvpInterface;
+import co.com.likeapro.likeaprorecordings.models.Recording;
+import co.com.likeapro.likeaprorecordings.models.Statistics;
 import co.com.likeapro.likeaprorecordings.repositories.StatisticsRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -20,6 +32,7 @@ public class StatisticsService implements MvpInterface, BestEventInterface {
     private final CustomerService customerService;
     private final RecordingService recordingService;
     private final EventService eventService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public Mono<Statistics> saveStatistics(Statistics statistics) {
         return statisticsRepository.save(statistics)
@@ -109,5 +122,18 @@ public class StatisticsService implements MvpInterface, BestEventInterface {
                     logger.error("Error finding the best event.", throwable);
                     return Mono.empty();
                 });
+    }
+
+    public Mono<Statistics> getStatisticsFromKafka(String topic, Integer partition, Integer offset)
+            throws JsonProcessingException {
+
+        ConsumerRecord<String, String> receivedStatistics;
+        KafkaConfig kafkaConfig = new KafkaConfig();
+        kafkaTemplate.setConsumerFactory(kafkaConfig.consumerFactory());
+        receivedStatistics = kafkaTemplate.receive(topic, partition, offset);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Statistics statistics = objectMapper.readValue(Objects.requireNonNull(receivedStatistics).value(),
+                Statistics.class);
+        return this.saveStatistics(statistics);
     }
 }

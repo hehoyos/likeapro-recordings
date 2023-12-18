@@ -4,6 +4,7 @@ import co.com.likeapro.likeaprorecordings.models.Customer;
 import co.com.likeapro.likeaprorecordings.models.Event;
 import co.com.likeapro.likeaprorecordings.models.Statistics;
 import co.com.likeapro.likeaprorecordings.services.StatisticsService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,5 +57,11 @@ public class StatisticsController {
     @GetMapping("/best-event")
     public Mono<Event> getBestEvent() {
         return statisticsService.getBestEvent();
+    }
+
+    @GetMapping("/kafka/{topic}/{partition}/{offset}")
+    public Mono<Statistics> getStatisticsFromKafkaTopic(@PathVariable String topic, @PathVariable Integer partition,
+                                                      @PathVariable Integer offset) throws JsonProcessingException {
+        return statisticsService.getStatisticsFromKafka(topic, partition, offset);
     }
 }
