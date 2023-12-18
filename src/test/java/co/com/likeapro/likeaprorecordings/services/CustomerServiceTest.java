@@ -28,7 +28,6 @@ class CustomerServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        customerService = new CustomerService(customerRepository);
         LocalDateTime now = LocalDateTime.now();
         customer = new Customer(1L, "John Smith", "johnsmith1@example.com", "password1", "1234567890", "role1", true,
                 now, now);

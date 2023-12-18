@@ -2,6 +2,7 @@ package co.com.likeapro.likeaprorecordings.controllers;
 
 import co.com.likeapro.likeaprorecordings.models.Customer;
 import co.com.likeapro.likeaprorecordings.services.CustomerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,5 +45,11 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteCustomer(@PathVariable Long id) {
         return customerService.deleteCustomer(id);
+    }
+
+    @GetMapping("/kafka/{topic}/{partition}/{offset}")
+    public Mono<Customer> getCustomerFromKafkaTopic(@PathVariable String topic, @PathVariable Integer partition,
+                                                    @PathVariable Integer offset) throws JsonProcessingException {
+        return customerService.getCustomerFromKafka(topic, partition, offset);
     }
 }
